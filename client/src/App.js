@@ -1,5 +1,4 @@
 import React from 'react';
-import { AsyncStorage } from 'react-native';
 import SocketIOClient from 'socket.io-client';
 
 import { InputForm } from './InputForm'
@@ -17,7 +16,9 @@ class App extends React.Component {
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient('http://localhost:3001');
+  }
     
+  componentWillMount() {
     this.determineUser();
   }
 
@@ -26,14 +27,14 @@ class App extends React.Component {
    * If they aren't, then ask the server for a userId.
    * Set the userId to the component's state.
    */
-  async determineUser() {
+  determineUser() {
     try {
-      const userId = await AsyncStorage.getItem('@userId');
+      const userId = localStorage.getItem('userId');
       // If there isn't a stored userId, then fetch one from the server.
       if (!userId) {
         this.socket.emit('user:join', null);
-        this.socket.on('user:join', (userId) => {
-          AsyncStorage.setItem('@userId', userId);
+        this.socket.on('user:new', (userId) => {
+          localStorage.setItem('userId', userId);
           this.setState({ userId : userId });
         });
       } else {

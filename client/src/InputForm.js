@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SocketIOClient from 'socket.io-client';
 
 import {InputText} from './InputText'
 
@@ -47,7 +46,7 @@ export class InputForm extends React.Component {
 }
 
 InputForm.propTypes = {
-  user: PropTypes.object.isRequired,
-  channel: PropTypes.object.isRequired,
-  socket: PropTypes.instanceOf(SocketIOClient).isRequired
+  user: PropTypes.string.isRequired,
+  channel: PropTypes.number.isRequired,
+  socket: PropTypes.object.isRequired
 }

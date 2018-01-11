@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SocketIOClient from 'socket.io-client';
 
 import { Messages } from './Messages';
 
@@ -30,6 +29,6 @@ export class MessagesContainer extends React.Component {
 }
 
 MessagesContainer.propTypes = {
-  channel: PropTypes.object.isRequired,
-  socket: PropTypes.instanceOf(SocketIOClient).isRequired
+  channel: PropTypes.number.isRequired,
+  socket: PropTypes.object.isRequired
 }

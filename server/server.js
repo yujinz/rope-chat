@@ -29,7 +29,7 @@ function onUserJoined(userId, socket) {
     // The userId is null for new users.
     if (!userId) {
       db.collection('users').insert({}, (err, user) => {
-        socket.emit('user:join', user._id);
+        socket.emit('user:new', user._id);
         users[socket.id] = user._id;
       });
     } else {
