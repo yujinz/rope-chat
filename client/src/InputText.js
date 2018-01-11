@@ -1,6 +1,5 @@
 import React from 'react';
-//import { AsyncStorage } from 'react-native';
-//import SocketIOClient from 'socket.io-client';
+import PropTypes from 'prop-types';
 
 export class InputText extends React.Component {
   constructor(props) {
@@ -21,4 +20,9 @@ export class InputText extends React.Component {
           onChange={this.handleTextInput} />
     );
   }
+}
+
+InputText.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired
 }

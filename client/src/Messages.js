@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export class Messages extends React.Component {
   render() {
@@ -20,4 +21,8 @@ export class Messages extends React.Component {
       </div>
     );
   }
+}
+
+Messages.propTypes = {
+  messages: PropTypes.array.isRequired
 }

@@ -19,25 +19,24 @@ websocket.on('connection', (socket) => {
   console.log('A client just joined on', socket.id);
 
   clients[socket.id] = socket;
-  socket.on('userJoined', (userId) => onUserJoined(userId, socket));  
-  socket.on('message', (message) => onMessageReceived(message, socket));
+  socket.on('user:join', (userId) => onUserJoined(userId, socket));  
+  socket.on('message:new', (message) => onMessageReceived(message, socket));
+  socket.on('message:fetch', (channelId) => _sendExistingMessages(channelId, socket));
 });
 
 function onUserJoined(userId, socket) {
   try {
     // The userId is null for new users.
     if (!userId) {
-      var user = db.collection('users').insert({}, (err, user) => {
-        socket.emit('userJoined', user._id);
+      db.collection('users').insert({}, (err, user) => {
+        socket.emit('user:join', user._id);
         users[socket.id] = user._id;
-        //_sendExistingMessages(socket);
       });
     } else {
       users[socket.id] = userId;
-      //_sendExistingMessages(socket);
     }
   } catch(err) {
-    console.err(err);
+    console.error(err);
   }
 }
 
@@ -52,7 +51,7 @@ function onMessageReceived(message, senderSocket) {
 }
 
 // Save the message to the db and send all sockets
-// NOT: but the sender.
+// TODO: but the sender.
 function _sendAndSaveMessage(message, socket, fromServer) {
   var messageData = {
     text: message.text,
@@ -62,7 +61,17 @@ function _sendAndSaveMessage(message, socket, fromServer) {
   };
 
   db.collection('messages').insert(messageData, (err, message) => {
-    websocket.emit('message', [message]);
+    websocket.emit('message:concat', [message]);
     console.log('server S');
   });
+}
+
+function _sendExistingMessages(channelId, socket) {
+  var messages = db.collection('messages')
+    .find({ channel: channelId })
+    .sort({ createdAt: 1 })
+    .toArray((err, messages) => {
+      if (!messages.length) return;
+      socket.emit('message:concat', messages);
+    });
 }

@@ -9,18 +9,15 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [],
       userId: null,
       channelId: 1
     };
 
     this.determineUser = this.determineUser.bind(this);     
-    this.onReceivedMessage = this.onReceivedMessage.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient('http://localhost:3001');
-        
-    this.socket.on('message', this.onReceivedMessage);
+    
     this.determineUser();
   }
 
@@ -34,24 +31,19 @@ class App extends React.Component {
       const userId = await AsyncStorage.getItem('@userId');
       // If there isn't a stored userId, then fetch one from the server.
       if (!userId) {
-        this.socket.emit('userJoined', null);
-        this.socket.on('userJoined', (userId) => {
+        this.socket.emit('user:join', null);
+        this.socket.on('user:join', (userId) => {
           AsyncStorage.setItem('@userId', userId);
           this.setState({ userId : userId });
         });
       } else {
-        this.socket.emit('userJoined', userId);
+        this.socket.emit('user:join', userId);
         this.setState({ userId : userId });
       }
     }
     catch(e) {
         alert(e)
     }
-  }
-
-  onReceivedMessage(newMessages) {
-    const currMessages = this.state.messages;
-    this.setState({ messages: currMessages.concat(newMessages) });
   }
 
   render() {
@@ -63,7 +55,8 @@ class App extends React.Component {
           Hi, {user}
         </h1>
         <MessagesContainer
-          messages={this.state.messages} />
+          channel={this.state.channelId}
+          socket={this.socket}/>
         <InputForm
           user={this.state.userId}
           channel={this.state.channelId}

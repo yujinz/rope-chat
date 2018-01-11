@@ -1,6 +1,7 @@
 import React from 'react';
-//import { AsyncStorage } from 'react-native';
-//import SocketIOClient from 'socket.io-client';
+import PropTypes from 'prop-types';
+import SocketIOClient from 'socket.io-client';
+
 import {InputText} from './InputText'
 
 export class InputForm extends React.Component {
@@ -26,7 +27,7 @@ export class InputForm extends React.Component {
       createdAt: new Date(),
       channel: this.props.channel
     }
-    this.props.socket.emit('message', message);
+    this.props.socket.emit('message:new', message);
     this.setState({ textInput: '' });
   }
 
@@ -43,4 +44,10 @@ export class InputForm extends React.Component {
       </div>
     );
   }
+}
+
+InputForm.propTypes = {
+  user: PropTypes.object.isRequired,
+  channel: PropTypes.object.isRequired,
+  socket: PropTypes.instanceOf(SocketIOClient).isRequired
 }
