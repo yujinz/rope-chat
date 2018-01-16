@@ -11,7 +11,7 @@ export class MessagesContainer extends React.Component {
     }
 
     this.onReceivedMessage = this.onReceivedMessage.bind(this);    
-    this.props.socket.on('message:concat', this.onReceivedMessage);
+    this.props.socket.on('message:concat', (newMessages) => this.onReceivedMessage(newMessages));
   }
 
   componentDidMount() {
@@ -24,11 +24,14 @@ export class MessagesContainer extends React.Component {
   }
 
   render() {
-    return <Messages messages={this.state.messages} />;
+    return <Messages
+      messages={this.state.messages}
+      users={this.props.users} />;
   }
 }
 
 MessagesContainer.propTypes = {
   channel: PropTypes.number.isRequired,
+  users: PropTypes.object.isRequired,
   socket: PropTypes.object.isRequired
 }

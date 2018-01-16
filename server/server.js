@@ -22,19 +22,21 @@ websocket.on('connection', (socket) => {
   socket.on('user:join', (userId) => onUserJoined(userId, socket));  
   socket.on('message:new', (message) => onMessageReceived(message, socket));
   socket.on('message:fetch', (channelId) => sendExistingMessages(channelId, socket)); 
-  socket.on('user:set-name', (user) => onUserJoined(user, socket));
+  socket.on('user:set-name', (user) => setUsername(user, socket)); 
+  socket.on('user:get-all', () => getAllUSers(socket));
 });
 
 function onUserJoined(userId, socket) {
   try {
     // The userId is null for new users.
     if (!userId) {
-      db.collection('users').insert({}, (err, user) => {
+      db.collection('users').insert({ name: null }, (err, user) => {
         socket.emit('user:new', user._id);
         users[socket.id] = user._id;
       });
     } else {
       users[socket.id] = userId;
+      //TODO: check exist
     }
   } catch(err) {
     console.error(err);
@@ -78,10 +80,17 @@ function sendExistingMessages(channelId, socket) {
 }
 
 function setUsername(user) {
-  const userId = ObjectId(user._id);
+  const userId = ObjectID(user._id);
   db.collection('users').update(
     {_id: userId},
     {$set: {name: user.name}}
-  );
-  //emit
+  );  
+  websocket.emit('user:concat', user);
+}
+
+function getAllUSers(socket) {
+  var usersArr = db.collection('users').find({})
+  .toArray((err, usersArr) => {
+      socket.emit('user:get-all', usersArr);
+    });
 }

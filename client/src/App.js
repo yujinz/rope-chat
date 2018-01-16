@@ -11,17 +11,21 @@ class App extends React.Component {
     this.state = {
       userId: null,
       channelId: 1,
-      unameModalIsOpen: false
+      unameModalIsOpen: false,
+      users: {}
     };
 
     this.closeUnameModal = this.closeUnameModal.bind(this);
+    this.onUserJoined = this.onUserJoined.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
-    this.socket = SocketIOClient('http://localhost:3001');    
+    this.socket = SocketIOClient('http://localhost:3001');   
+    this.socket.on('user:concat', (newUser) =>  this.onUserJoined(newUser));   
   }
 
   componentDidMount() {
     this._determineUser();
+    this._getAllUsers();
   }
   
   /**
@@ -50,6 +54,24 @@ class App extends React.Component {
     }
   }
 
+  _getAllUsers() {
+    this.socket.emit('user:get-all');
+    this.socket.on('user:get-all', (usersArr) => {
+      var usersDict = usersArr.reduce(function(entry, obj) {
+        entry[obj._id] = obj;
+        return entry;
+      }, {});
+      this.setState({ users: usersDict });
+    });
+  }
+
+  onUserJoined(newUser) {
+    let users = this.state.users;
+    users[newUser._id] = newUser;
+    this.setState({ users: users });
+    console.log(newUser.name + " joined");
+  }
+
   _openUnameModal() {
     this.setState({unameModalIsOpen: true});
   }
@@ -59,17 +81,20 @@ class App extends React.Component {
   }
 
   render() {
-    const user = this.state.userId || -1;
-
-    if (this.state.userId == null) return (<div>loading...</div>);
+    if (this.state.userId == null
+      || !(this.state.userId in this.state.users))
+      return (<div>loading...</div>);
+    
+    const username = this.state.users[this.state.userId].name;
     
     return (      
       <div>
         <h1>
-          Hi, {user}
+          Hi, {username}
         </h1>
         <MessagesContainer
           channel={this.state.channelId}
+          users={this.state.users}
           socket={this.socket} />
         <InputForm
           user={this.state.userId}

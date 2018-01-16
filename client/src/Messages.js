@@ -6,10 +6,12 @@ export class Messages extends React.Component {
     const messages = this.props.messages;
     let messages_list;
     if (messages) {
-      messages_list = messages.map(message_obj => {        
+      messages_list = messages.map(message_obj => {
+        const userId = message_obj.user;
+        const username = this.props.users[userId].name;
         return (
           <li key={message_obj._id}>
-            <b>{message_obj.user}: </b>
+            <b>{username}: </b>
             {message_obj.text}
           </li>
         );        
@@ -24,5 +26,6 @@ export class Messages extends React.Component {
 }
 
 Messages.propTypes = {
-  messages: PropTypes.array.isRequired
+  messages: PropTypes.array.isRequired,
+  users: PropTypes.object.isRequired
 }
