@@ -35,6 +35,7 @@ export class InputForm extends React.Component {
       <div>
         <InputText 
           onChange={this.changeTextInput}
+          onSubmit={this.handleSend}
           value={this.state.textInput} />
         <button 
           onClick={this.handleSend} >

@@ -21,7 +21,8 @@ websocket.on('connection', (socket) => {
   clients[socket.id] = socket;
   socket.on('user:join', (userId) => onUserJoined(userId, socket));  
   socket.on('message:new', (message) => onMessageReceived(message, socket));
-  socket.on('message:fetch', (channelId) => _sendExistingMessages(channelId, socket));
+  socket.on('message:fetch', (channelId) => sendExistingMessages(channelId, socket)); 
+  socket.on('user:set-name', (user) => onUserJoined(user, socket));
 });
 
 function onUserJoined(userId, socket) {
@@ -66,7 +67,7 @@ function _sendAndSaveMessage(message, socket, fromServer) {
   });
 }
 
-function _sendExistingMessages(channelId, socket) {
+function sendExistingMessages(channelId, socket) {
   var messages = db.collection('messages')
     .find({ channel: channelId })
     .sort({ createdAt: 1 })
@@ -74,4 +75,13 @@ function _sendExistingMessages(channelId, socket) {
       if (!messages.length) return;
       socket.emit('message:concat', messages);
     });
+}
+
+function setUsername(user) {
+  const userId = ObjectId(user._id);
+  db.collection('users').update(
+    {_id: userId},
+    {$set: {name: user.name}}
+  );
+  //emit
 }
