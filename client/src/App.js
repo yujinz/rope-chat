@@ -20,7 +20,7 @@ class App extends React.Component {
     this.socket = SocketIOClient('http://localhost:3001');    
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this._determineUser();
   }
   
@@ -60,6 +60,8 @@ class App extends React.Component {
 
   render() {
     const user = this.state.userId || -1;
+
+    if (this.state.userId == null) return (<div>loading...</div>);
     
     return (      
       <div>

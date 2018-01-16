@@ -14,8 +14,9 @@ export class UsernameModal extends React.Component {
       unameInput: ''
     };
     
-    this.handleSend = this.handleSend.bind(this);
     this.changeUnameInput = this.changeUnameInput.bind(this);
+    this.handleSend = this.handleSend.bind(this);
+    this.handleModalCloseRequest = this.handleModalCloseRequest.bind(this);
     this._setUsername = this._setUsername.bind(this);
   }
 
