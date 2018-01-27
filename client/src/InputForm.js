@@ -24,6 +24,7 @@ export class InputForm extends React.Component {
       text: this.state.textInput,
       user: this.props.user,
       createdAt: new Date(),
+      thread: Math.floor(Math.random()*101),
       channel: this.props.channel
     }
     this.props.socket.emit('message:new', message);
@@ -49,5 +50,6 @@ export class InputForm extends React.Component {
 InputForm.propTypes = {
   user: PropTypes.string.isRequired,
   channel: PropTypes.number.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  getThreadColor: PropTypes.func.isRequired
 }

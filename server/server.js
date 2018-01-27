@@ -60,7 +60,8 @@ function _sendAndSaveMessage(message, socket, fromServer) {
     text: message.text,
     user: message.user,
     createdAt: new Date(message.createdAt),
-    channel: message.channel
+    channel: message.channel,
+    thread: message.thread
   };
 
   db.collection('messages').insert(messageData, (err, message) => {

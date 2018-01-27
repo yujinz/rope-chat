@@ -17,10 +17,13 @@ class App extends React.Component {
 
     this.closeUnameModal = this.closeUnameModal.bind(this);
     this.onUserJoined = this.onUserJoined.bind(this);
+    this.getThreadColor = this.getThreadColor.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient('http://localhost:3001');   
-    this.socket.on('user:concat', (newUser) =>  this.onUserJoined(newUser));   
+    this.socket.on('user:concat', (newUser) => this.onUserJoined(newUser));
+    
+    this.threadColors = ['#96ceb4', '#b8a9c9', '#ffcc5c', '#ff6f69', '#87bdd8'];
   }
 
   componentDidMount() {
@@ -80,6 +83,15 @@ class App extends React.Component {
     this.setState({unameModalIsOpen: false});
   }
 
+  getThreadColor(threadId) {
+    if (threadId) {
+      const cLen = this.threadColors.length;
+      return this.threadColors[threadId % cLen];
+    }
+    console.log("getThreadColor for null");
+    return 'white';
+  }
+
   render() {
     if (this.state.userId == null
       || !(this.state.userId in this.state.users))
@@ -95,11 +107,13 @@ class App extends React.Component {
         <MessagesContainer
           channel={this.state.channelId}
           users={this.state.users}
-          socket={this.socket} />
+          socket={this.socket}
+          getThreadColor={this.getThreadColor} />
         <InputForm
           user={this.state.userId}
           channel={this.state.channelId}
-          socket={this.socket} />
+          socket={this.socket}
+          getThreadColor={this.getThreadColor} />
         <UsernameModal
           userId={this.state.userId}  
           modalIsOpen={this.state.unameModalIsOpen}

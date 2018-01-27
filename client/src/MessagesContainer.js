@@ -26,12 +26,14 @@ export class MessagesContainer extends React.Component {
   render() {
     return <Messages
       messages={this.state.messages}
-      users={this.props.users} />;
+      users={this.props.users}
+      getThreadColor={this.props.getThreadColor} />;
   }
 }
 
 MessagesContainer.propTypes = {
   channel: PropTypes.number.isRequired,
   users: PropTypes.object.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  getThreadColor: PropTypes.func.isRequired
 }
