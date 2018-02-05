@@ -39,6 +39,7 @@ export class InputForm extends React.Component {
     }
     this.props.socket.emit('message:new', message);
     this.setState({ textInput: '' });
+    if (this.props.threadReplying) this.props.clearThreadReplying();
   }
 
   render() {
@@ -64,5 +65,6 @@ InputForm.propTypes = {
   channel: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
   getThreadColor: PropTypes.func.isRequired,
-  threadReplying: PropTypes.string
+  threadReplying: PropTypes.string,
+  clearThreadReplying: PropTypes.func.isRequired
 }

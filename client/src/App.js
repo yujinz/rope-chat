@@ -132,7 +132,8 @@ class App extends React.Component {
           channel={this.state.channelId}
           socket={this.socket}
           getThreadColor={this.getThreadColor}
-          threadReplying={this.state.threadReplying} />
+          threadReplying={this.state.threadReplying}
+          clearThreadReplying={this.clearThreadReplying}/>
         <UsernameModal
           userId={this.state.userId}  
           modalIsOpen={this.state.unameModalIsOpen}
