@@ -1,22 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-
-const ThreadCreater = styled.span`
-  vertical-align: middle;
-`;
-
-const ThreadBtn = styled.button.attrs({
-  background: props => props.backgroundColor || 'white'
-})`
-  padding: 4px 6px;
-  vertical-align: middle;
-  background: ${props => props.background};
-  ${ThreadCreater}:hover & {
-    visibility: visible;
-  }
-  visibility: ${props => props.background=='white'? 'hidden':'visible'}
-`;
+import { ThreadContainer } from './ThreadContainer';
 
 export class Messages extends React.Component {
   render() {
@@ -26,22 +10,15 @@ export class Messages extends React.Component {
       messages_list = messages.map(message_obj => {
         const userId = message_obj.user;
         const username = this.props.users[userId].name;
-        const threadId = message_obj.thread;        
         return (
           <li key={message_obj._id}>
-            {threadId &&
-              <ThreadBtn 
-                backgroundColor={this.props.getThreadColor(threadId) } >
-              </ThreadBtn>
-            }
-            {!threadId &&
-              //<ThreadCreater >
-              //  <ThreadBtn />
-              //</ThreadCreater>
-              <ThreadCreater>
-                <ThreadBtn />
-              </ThreadCreater>
-            }
+            <ThreadContainer
+              threadId={message_obj.thread}
+              messageId={message_obj._id}
+              socket={this.props.socket}
+              getThreadColor={this.props.getThreadColor}
+              threadReplying={this.props.threadReplying}
+              replyToThread={this.props.replyToThread} />
             <b>{username}: </b>
             {message_obj.text}
           </li>
@@ -59,5 +36,8 @@ export class Messages extends React.Component {
 Messages.propTypes = {
   messages: PropTypes.array.isRequired,
   users: PropTypes.object.isRequired,
-  getThreadColor: PropTypes.func.isRequired
+  socket: PropTypes.object.isRequired,
+  getThreadColor: PropTypes.func.isRequired,
+  replyToThread: PropTypes.func.isRequired,
+  threadReplying: PropTypes.string
 }

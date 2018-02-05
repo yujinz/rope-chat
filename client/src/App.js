@@ -12,18 +12,22 @@ class App extends React.Component {
       userId: null,
       channelId: 1,
       unameModalIsOpen: false,
-      users: {}
+      users: {},
+      threadReplying: null
     };
 
     this.closeUnameModal = this.closeUnameModal.bind(this);
     this.onUserJoined = this.onUserJoined.bind(this);
     this.getThreadColor = this.getThreadColor.bind(this);
+    this.setThreadReplying = this.setThreadReplying.bind(this);
+    this.clearThreadReplying = this.clearThreadReplying.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient('http://localhost:3001');   
     this.socket.on('user:concat', (newUser) => this.onUserJoined(newUser));
     
-    this.threadColors = ['#96ceb4', '#b8a9c9', '#ffcc5c', '#ff6f69', '#87bdd8'];
+    this.threadColors = ['#96ceb4', '#b8a9c9', '#ffcc5c', '#ff6f69', '#87bdd8',
+      '#FF6E84', '#55C1FF', '#00A651', '#17CEA6', '#FFCE1C', '#008BDD', '#8848BA'];
   }
 
   componentDidMount() {
@@ -85,11 +89,23 @@ class App extends React.Component {
 
   getThreadColor(threadId) {
     if (threadId) {
-      const cLen = this.threadColors.length;
-      return this.threadColors[threadId % cLen];
+      const hashCode = function(str) { // Credit to: github.com/darkskyapp/string-hash
+        var hash = 5381, i = str.length;
+        while(i)  hash = (hash * 33) ^ str.charCodeAt(--i);
+        return hash >>> 0;
+      };
+      //console.log(hashCode(threadId.toString()));
+      return this.threadColors[hashCode(threadId.toString()) % this.threadColors.length];
     }
-    console.log("getThreadColor for null");
     return 'white';
+  }
+  
+  setThreadReplying(threadId) {
+    this.setState({ threadReplying: threadId });
+  }
+
+  clearThreadReplying() {
+    this.setState({ threadReplying: null });
   }
 
   render() {
@@ -108,12 +124,15 @@ class App extends React.Component {
           channel={this.state.channelId}
           users={this.state.users}
           socket={this.socket}
-          getThreadColor={this.getThreadColor} />
+          getThreadColor={this.getThreadColor}
+          threadReplying={this.state.threadReplying}
+          replyToThread={this.setThreadReplying} />
         <InputForm
           user={this.state.userId}
           channel={this.state.channelId}
           socket={this.socket}
-          getThreadColor={this.getThreadColor} />
+          getThreadColor={this.getThreadColor}
+          threadReplying={this.state.threadReplying} />
         <UsernameModal
           userId={this.state.userId}  
           modalIsOpen={this.state.unameModalIsOpen}

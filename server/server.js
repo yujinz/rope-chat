@@ -68,6 +68,23 @@ function _sendAndSaveMessage(message, socket, fromServer) {
     websocket.emit('message:concat', [message]);
     console.log('server S');
   });
+
+  if (message.thread) {
+    const messageId = ObjectID(message.thread); // message being replied
+    db.collection('messages').update(
+      { _id: messageId },
+      { $set: { thread: messageId } }
+    );
+    /*
+    // for TODO feature: list of threads
+    if (!db.collection('threads').find({ leadMsgId: message.thread })) {
+      var threadData = {
+        leadMsgId: message.thread
+      }
+      db.collection('threads').insert(threadData);
+    }
+    */
+  }  
 }
 
 function sendExistingMessages(channelId, socket) {

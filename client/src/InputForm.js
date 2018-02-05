@@ -1,7 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import {InputText} from './InputText'
+import { InputText } from './InputText'
+
+const ThreadBtn = styled.button.attrs({
+  background: props => props.backgroundColor || 'white'
+})`
+  padding: 4px 6px;
+  vertical-align: middle;
+  background: ${props => props.background};  
+  visibility: ${props => props.background==='white'? 'hidden':'visible'}
+`;
 
 export class InputForm extends React.Component {
   constructor(props) {
@@ -24,7 +34,7 @@ export class InputForm extends React.Component {
       text: this.state.textInput,
       user: this.props.user,
       createdAt: new Date(),
-      thread: Math.floor(Math.random()*101),
+      thread: this.props.threadReplying,
       channel: this.props.channel
     }
     this.props.socket.emit('message:new', message);
@@ -34,6 +44,8 @@ export class InputForm extends React.Component {
   render() {
     return (
       <div>
+        <ThreadBtn 
+          backgroundColor={this.props.getThreadColor(this.props.threadReplying)} />
         <InputText 
           onChange={this.changeTextInput}
           onSubmit={this.handleSend}
@@ -51,5 +63,6 @@ InputForm.propTypes = {
   user: PropTypes.string.isRequired,
   channel: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
-  getThreadColor: PropTypes.func.isRequired
+  getThreadColor: PropTypes.func.isRequired,
+  threadReplying: PropTypes.string
 }
